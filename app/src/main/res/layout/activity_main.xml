@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ch.black_book.bubbleconsent.MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/colorPrimary">
+    <include layout="@layout/usz_toolbar" />
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/colorPrimary"
+            android:layout_marginTop="50dp">
+        <ToggleButton
+            android:id="@+id/toggleButtonAppendix"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Appendix"
+            android:textOn="Appendix"
+            android:textOff="Appendix" />
+        <ToggleButton
+            android:id="@+id/toggleButtonGeneralConsent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="GeneralConsent"
+            android:textOn="General Consent"
+            android:textOff="General Consent"/>
+    </LinearLayout>-->
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/_layout_fab_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="13dp"
+        android:layout_marginRight="13dp"
+        android:layout_marginBottom="200dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:text="Start von Screen"
+            android:textColor="@color/colorPrimaryLight" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_1"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:tint="@color/colorIcons"
+            app:srcCompat="@android:drawable/ic_menu_set_as" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/_layout_fab_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="13dp"
+        android:layout_marginRight="13dp"
+        android:layout_marginBottom="140dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:text="Manuelle Erfassung"
+            android:textColor="@color/colorPrimaryLight" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_2"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            app:srcCompat="@android:drawable/ic_menu_edit"
+            android:tint="@color/colorIcons"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/_layout_fab_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="13dp"
+        android:layout_marginRight="13dp"
+        android:layout_marginBottom="80dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:text="Scannen"
+            android:textColor="@color/colorPrimaryLight" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_3"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            app:srcCompat="@android:drawable/ic_menu_camera"
+            android:tint="@color/colorIcons"/>
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_input_add"
+        android:tint="@color/colorIcons"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
