@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
@@ -32,6 +33,15 @@ import java.util.Objects;
 
 import androidx.core.util.Pair;
 
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.TextRecognizer;
+//import com.google.mlkit.vision.common.InputImage;
+
+import ch.black_book.bubbleconsent.LabelReader.CameraSource;
+import ch.black_book.bubbleconsent.LabelReader.OcrDetectorListener;
+import ch.black_book.bubbleconsent.LabelReader.OcrDetectorProcessor;
+import ch.black_book.bubbleconsent.LabelReader.PatientRecord;
+
 public class ScreenCaptureService extends Service {
 
     private static final String TAG = "ScreenCaptureService";
@@ -55,6 +65,8 @@ public class ScreenCaptureService extends Service {
     private int mHeight;
     private int mRotation;
     private OrientationChangeCallback mOrientationChangeCallback;
+
+    private TextRecognizer mTextRecognizer;
 
     public static Intent getStartIntent(Context context, int resultCode, Intent data) {
         Intent intent = new Intent(context, ScreenCaptureService.class);
@@ -87,6 +99,7 @@ public class ScreenCaptureService extends Service {
         @Override
         public void onImageAvailable(ImageReader reader) {
 
+            Frame outputFrame;
             FileOutputStream fos = null;
             Bitmap bitmap = null;
             try (Image image = mImageReader.acquireLatestImage()) {
@@ -108,6 +121,34 @@ public class ScreenCaptureService extends Service {
 
                     IMAGES_PRODUCED++;
                     Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
+
+                    outputFrame = new Frame.Builder()
+                            .setImageData(buffer, mWidth,
+                                    mHeight, PixelFormat.RGBA_8888)
+                            .setId(IMAGES_PRODUCED)
+                            .setTimestampMillis(0)
+                            .setRotation(mRotation)
+                            .build();
+/*
+                    //bitmap = Bitmap.createBitmap(mWidth + rowPadding / pixelStride, mHeight, Bitmap.Config.ImageFormat.NV21);
+                    //bitmap.copyPixelsFromBuffer(buffer);
+
+                    // Hold onto the frame data locally, so that we can use this for detection
+                    // below.  We need to clear mPendingFrameData to ensure that this buffer isn't
+                    // recycled back to the camera before we are done using that data.
+                    //data = mPendingFrameData;
+                    //mPendingFrameData = null;
+
+                    //InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
+*/
+                    try {
+                        mTextRecognizer.receiveFrame(outputFrame);
+                    } catch (Throwable t) {
+                        Log.e(TAG, "Exception thrown from receiver.", t);
+                    } finally {
+                        //mCamera.addCallbackBuffer(data.array());
+                    }
+
                 }
 
             } catch (Exception e) {
@@ -198,6 +239,25 @@ public class ScreenCaptureService extends Service {
             stopSelf();
         }
 
+        // OCR Engine
+        /*
+        Context context = getApplicationContext();
+        mTextRecognizer = new TextRecognizer.Builder(context).build();
+        mTextRecognizer.setProcessor(new OcrDetectorProcessorNoOverlay(new OcrDetectorListener() {
+            @Override
+            public void onPatientDetected(PatientRecord patientRecord) {
+                Intent data = new Intent();
+                data.putExtra("FIRST_NAME", patientRecord.FirstName);
+                data.putExtra("LAST_NAME", patientRecord.LastName);
+                data.putExtra("CODE", patientRecord.Code);
+                data.putExtra("DOB", patientRecord.DateString);
+                //setResult(RESULT_OK, data);
+                //finish();
+                Log.e(TAG, "no overlay patient detected!");
+                stopProjection();
+            }
+        }));
+*/
         // start capture handling thread
         new Thread() {
             @Override

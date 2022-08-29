@@ -1,3 +1,4 @@
+/*
 package ch.black_book.bubbleconsent.BubbleStart;
 
 
@@ -31,6 +32,7 @@ import java.util.Map;
 // Note: This requires Google Play Services 8.1 or higher, due to using indirect byte buffers for
 // storing png.
 
+*/
 /**
  * Manages the camera in conjunction with an underlying
  * {@link com.google.android.gms.vision.Detector}.  This receives preview frames from the camera at
@@ -49,22 +51,27 @@ import java.util.Map;
  * <ul>
  * <li>android.permissions.CAMERA</li>
  * </ul>
- */
+ *//*
+
 @SuppressWarnings("deprecation")
 public class ScreenshotSource {
 
     private static final String TAG = "ScreenshotSource";
 
-    /**
+    */
+/**
      * The dummy surface texture must be assigned a chosen name.  Since we never use an OpenGL
      * context, we can choose any ID we want here.
-     */
+     *//*
+
     private static final int DUMMY_TEXTURE_NAME = 200;
 
-    /**
+    */
+/**
      * If the absolute difference between a preview size aspect ratio and a picture size aspect
      * ratio is less than this tolerance, they are considered to be the same aspect ratio.
-     */
+     *//*
+
     private static final float ASPECT_RATIO_TOLERANCE = 0.01f;
 
     private Context mContext;
@@ -85,35 +92,43 @@ public class ScreenshotSource {
     private SurfaceView mDummySurfaceView;
     private SurfaceTexture mDummySurfaceTexture;
 
-    /**
+    */
+/**
      * Dedicated thread and associated runnable for calling into the detector with frames, as the
      * frames become available from the camera.
-     */
+     *//*
+
     private Thread mProcessingThread;
     private FrameProcessingRunnable mFrameProcessor;
 
-    /**
+    */
+/**
      * Map to convert between a byte array, received from the camera, and its associated byte
      * buffer.  We use byte buffers internally because this is a more efficient way to call into
      * native code later (avoids a potential copy).
-     */
+     *//*
+
     private Map<byte[], ByteBuffer> mBytesToByteBuffer = new HashMap<>();
 
     //==============================================================================================
     // Builder
     //==============================================================================================
 
-    /**
+    */
+/**
      * Builder for configuring and creating an associated camera source.
-     */
+     *//*
+
     public static class Builder {
         private final Detector<?> mDetector;
         private ScreenshotSource mScreenshotSource = new ScreenshotSource();
 
-        /**
+        */
+/**
          * Creates a camera source builder with the supplied context and detector.  Camera preview
          * png will be streamed to the associated detector upon starting the camera source.
-         */
+         *//*
+
         public Builder(Context context, Detector<?> detector) {
             if (context == null) {
                 throw new IllegalArgumentException("No context supplied.");
@@ -126,12 +141,14 @@ public class ScreenshotSource {
             mScreenshotSource.mContext = context;
         }
 
-        /**
+        */
+/**
          * Sets the desired width and height of the camera frames in pixels.  If the exact desired
          * values are not available options, the best matching available options are selected.
          * Also, we try to select a preview size which corresponds to the aspect ratio of an
          * associated full picture size, if applicable.  Default: 1024x768.
-         */
+         *//*
+
         public ScreenshotSource.Builder setRequestedPreviewSize(int width, int height) {
             // Restrict the requested range to something within the realm of possibility.  The
             // choice of 1000000 is a bit arbitrary -- intended to be well beyond resolutions that
@@ -145,9 +162,11 @@ public class ScreenshotSource {
             return this;
         }
 
-        /**
+        */
+/**
          * Creates an instance of the camera source.
-         */
+         *//*
+
         public ScreenshotSource build() {
             mScreenshotSource.mFrameProcessor = mScreenshotSource.new FrameProcessingRunnable(mDetector);
             return mScreenshotSource;
@@ -158,27 +177,35 @@ public class ScreenshotSource {
     // Bridge Functionality for the Camera1 API
     //==============================================================================================
 
-    /**
+    */
+/**
      * Callback interface used to signal the moment of actual image capture.
-     */
+     *//*
+
     public interface ShutterCallback {
-        /**
+        */
+/**
          * Called as near as possible to the moment when a photo is captured from the sensor. This
          * is a good opportunity to play a shutter sound or give other feedback of camera operation.
          * This may be some time after the photo was triggered, but some time before the actual data
          * is available.
-         */
+         *//*
+
         void onShutter();
     }
 
-    /**
+    */
+/**
      * Callback interface used to supply image data from a photo capture.
-     */
+     *//*
+
     public interface PictureCallback {
-        /**
+        */
+/**
          * Called when image data is available after a picture is taken.  The format of the data
          * is a jpeg binary.
-         */
+         *//*
+
         void onPictureTaken(byte[] data);
     }
 
@@ -186,9 +213,11 @@ public class ScreenshotSource {
     // Public
     //==============================================================================================
 
-    /**
+    */
+/**
      * Stops the camera and releases the resources of the camera and underlying detector.
-     */
+     *//*
+
     public void release() {
         synchronized (mCameraLock) {
             stop();
@@ -196,12 +225,14 @@ public class ScreenshotSource {
         }
     }
 
-    /**
+    */
+/**
      * Opens the camera and starts sending preview frames to the underlying detector.  The preview
      * frames are not displayed.
      *
      * @throws IOException if the camera's preview texture or display could not be initialized
-     */
+     *//*
+
     @RequiresPermission(Manifest.permission.CAMERA)
     public ScreenshotSource start() throws IOException {
         synchronized (mCameraLock) {
@@ -229,13 +260,15 @@ public class ScreenshotSource {
         return this;
     }
 
-    /**
+    */
+/**
      * Opens the camera and starts sending preview frames to the underlying detector.  The supplied
      * surface holder is used for the preview so frames can be displayed to the user.
      *
      * @param surfaceHolder the surface holder to use for the preview frames
      * @throws IOException if the supplied surface holder could not be used as the preview display
-     */
+     *//*
+
     @RequiresPermission(Manifest.permission.CAMERA)
     public ScreenshotSource start(SurfaceHolder surfaceHolder) throws IOException {
         synchronized (mCameraLock) {
@@ -254,7 +287,8 @@ public class ScreenshotSource {
         return this;
     }
 
-    /**
+    */
+/**
      * Closes the camera and stops sending frames to the underlying frame detector.
      * <p/>
      * This camera source may be restarted again by calling {@link #start()} or
@@ -262,7 +296,8 @@ public class ScreenshotSource {
      * <p/>
      * Call {@link #release()} instead to completely shut down this camera source and release the
      * resources of the underlying detector.
-     */
+     *//*
+
     public void stop() {
         synchronized (mCameraLock) {
             mFrameProcessor.setActive(false);
@@ -306,15 +341,18 @@ public class ScreenshotSource {
         }
     }
 
-    /**
+    */
+/**
      * Returns the preview size that is currently in use by the underlying camera.
-     */
+     *//*
+
     public Size getPreviewSize() {
         return mPreviewSize;
     }
 
 
-    /**
+    */
+/**
      * Initiates taking a picture, which happens asynchronously.  The camera source should have been
      * activated previously with {@link #start()} or {@link #start(SurfaceHolder)}.  The camera
      * preview is suspended while the picture is being taken, but will resume once picture taking is
@@ -322,7 +360,8 @@ public class ScreenshotSource {
      *
      * @param shutter the callback for image capture moment, or null
      * @param jpeg    the callback for JPEG image data, or null
-     */
+     *//*
+
     public void takePicture(ScreenshotSource.ShutterCallback shutter, ScreenshotSource.PictureCallback jpeg) {
         synchronized (mCameraLock) {
             if (mCamera != null) {
@@ -340,15 +379,19 @@ public class ScreenshotSource {
     // Private
     //==============================================================================================
 
-    /**
+    */
+/**
      * Only allow creation via the builder class.
-     */
+     *//*
+
     private ScreenshotSource() {
     }
 
-    /**
+    */
+/**
      * Wraps the camera1 shutter callback so that the deprecated API isn't exposed.
-     */
+     *//*
+
     private class PictureStartCallback implements Camera.ShutterCallback {
         private ScreenshotSource.ShutterCallback mDelegate;
 
@@ -360,10 +403,12 @@ public class ScreenshotSource {
         }
     }
 
-    /**
+    */
+/**
      * Wraps the final callback in the camera sequence, so that we can automatically turn the camera
      * preview back on after the picture has been taken.
-     */
+     *//*
+
     private class PictureDoneCallback implements Camera.PictureCallback {
         private ScreenshotSource.PictureCallback mDelegate;
 
@@ -381,7 +426,8 @@ public class ScreenshotSource {
     }
 
 
-    /**
+    */
+/**
      * Selects the most suitable preview and picture size, given the desired width and height.
      * <p/>
      * Even though we may only need the preview size, it's necessary to find both the preview
@@ -393,7 +439,8 @@ public class ScreenshotSource {
      * @param desiredWidth  the desired width of the camera preview frames
      * @param desiredHeight the desired height of the camera preview frames
      * @return the selected preview and picture size pair
-     */
+     *//*
+
     private static ScreenshotSource.SizePair selectSizePair(Camera camera, int desiredWidth, int desiredHeight) {
         List<ScreenshotSource.SizePair> validPreviewSizes = generateValidPreviewSizeList(camera);
 
@@ -416,12 +463,14 @@ public class ScreenshotSource {
         return selectedPair;
     }
 
-    /**
+    */
+/**
      * Stores a preview size and a corresponding same-aspect-ratio picture size.  To avoid distorted
      * preview png on some devices, the picture size must be set to a size that is the same
      * aspect ratio as the preview size or the preview may end up being distorted.  If the picture
      * size is null, then there is no picture size with the same aspect ratio as the preview size.
-     */
+     *//*
+
     private static class SizePair {
         private Size mPreview;
         private Size mPicture;
@@ -444,7 +493,8 @@ public class ScreenshotSource {
         }
     }
 
-    /**
+    */
+/**
      * Generates a list of acceptable preview sizes.  Preview sizes are not acceptable if there is
      * not a corresponding picture size of the same aspect ratio.  If there is a corresponding
      * picture size of the same aspect ratio, the picture size is paired up with the preview size.
@@ -452,7 +502,8 @@ public class ScreenshotSource {
      * This is necessary because even if we don't use still pictures, the still picture size must be
      * set to a size that is the same aspect ratio as the preview size we choose.  Otherwise, the
      * preview png may be distorted on some devices.
-     */
+     *//*
+
     private static List<ScreenshotSource.SizePair> generateValidPreviewSizeList(Camera camera) {
         Camera.Parameters parameters = camera.getParameters();
         List<android.hardware.Camera.Size> supportedPreviewSizes =
@@ -489,14 +540,16 @@ public class ScreenshotSource {
         return validPreviewSizes;
     }
 
-    /**
+    */
+/**
      * Selects the most suitable preview frames per second range, given the desired frames per
      * second.
      *
      * @param camera            the camera to select a frames per second range from
      * @param desiredPreviewFps the desired frames per second for the camera preview frames
      * @return the selected preview frames per second range
-     */
+     *//*
+
     private int[] selectPreviewFpsRange(Camera camera, float desiredPreviewFps) {
         // The camera API uses integers scaled by a factor of 1000 instead of floating-point frame
         // rates.
@@ -522,12 +575,14 @@ public class ScreenshotSource {
         return selectedFpsRange;
     }
 
-    /**
+    */
+/**
      * Creates one buffer for the camera preview callback.  The size of the buffer is based off of
      * the camera preview size and the format of the camera image.
      *
      * @return a new preview buffer of the appropriate size for the current camera settings
-     */
+     *//*
+
     private byte[] createPreviewBuffer(Size previewSize) {
         int bitsPerPixel = ImageFormat.getBitsPerPixel(ImageFormat.NV21);
         long sizeInBits = previewSize.getHeight() * previewSize.getWidth() * bitsPerPixel;
@@ -555,9 +610,11 @@ public class ScreenshotSource {
     // Frame processing
     //==============================================================================================
 
-    /**
+    */
+/**
      * Called when the camera has a new preview frame.
-     */
+     *//*
+
     private class CameraPreviewCallback implements Camera.PreviewCallback {
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
@@ -565,7 +622,8 @@ public class ScreenshotSource {
         }
     }
 
-    /**
+    */
+/**
      * This runnable controls access to the underlying receiver, calling it to process frames when
      * available from the camera.  This is designed to run detection on frames as fast as possible
      * (i.e., without unnecessary context switching or waiting on the next frame).
@@ -574,7 +632,8 @@ public class ScreenshotSource {
      * frames come in, the most recent frame is held onto as pending.  As soon as detection and its
      * associated processing are done for the previous frame, detection on the mostly recently
      * received frame will immediately start on the same thread.
-     */
+     *//*
+
     private class FrameProcessingRunnable implements Runnable {
         private Detector<?> mDetector;
         private long mStartTimeMillis = SystemClock.elapsedRealtime();
@@ -592,10 +651,12 @@ public class ScreenshotSource {
             mDetector = detector;
         }
 
-        /**
+        */
+/**
          * Releases the underlying receiver.  This is only safe to do after the associated thread
          * has completed, which is managed in camera source's release method above.
-         */
+         *//*
+
         @SuppressLint("Assert")
         void release() {
             assert (mProcessingThread.getState() == State.TERMINATED);
@@ -603,9 +664,11 @@ public class ScreenshotSource {
             mDetector = null;
         }
 
-        /**
+        */
+/**
          * Marks the runnable as active/not active.  Signals any blocked threads to continue.
-         */
+         *//*
+
         void setActive(boolean active) {
             synchronized (mLock) {
                 mActive = active;
@@ -613,11 +676,13 @@ public class ScreenshotSource {
             }
         }
 
-        /**
+        */
+/**
          * Sets the frame data received from the camera.  This adds the previous unused frame buffer
          * (if present) back to the camera, and keeps a pending reference to the frame data for
          * future use.
-         */
+         *//*
+
         void setNextFrame(byte[] data, Camera camera) {
             synchronized (mLock) {
                 if (mPendingFrameData != null) {
@@ -643,7 +708,8 @@ public class ScreenshotSource {
             }
         }
 
-        /**
+        */
+/**
          * As long as the processing thread is active, this executes detection on frames
          * continuously.  The next pending frame is either immediately available or hasn't been
          * received yet.  Once it is available, we transfer the frame info to local variables and
@@ -656,7 +722,8 @@ public class ScreenshotSource {
          * <p/>
          * If you find that this is using more CPU than you'd like, you should probably decrease the
          * FPS setting above to allow for some idle time in between frames.
-         */
+         *//*
+
         @Override
         public void run() {
             Frame outputFrame;
@@ -714,3 +781,4 @@ public class ScreenshotSource {
     }
 }
 
+*/
