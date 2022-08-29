@@ -3,9 +3,12 @@ package ch.black_book.bubbleconsent;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import android.graphics.Bitmap;
+import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -59,12 +62,12 @@ public class MainActivity extends AppCompatActivity {
     private String consentPDFContent = "html-appendix/consentPDFcontent.html";
     private String consentReviewContent = "html-appendix/consent.html";
     private String fileFolder = "/BUBBLEConsent";
-    private String filePrefix = "Appendix_";
+    private String filePrefix = "Bubble_";
     private PatientRecord patientRecord;
 
-    private static int SCREEN_RECORD = 123;
-    // private ToggleButton toggleGeneralConsent;
-    // private ToggleButton toggleAppendix;
+    // screenshot
+    private static final int REQUEST_CODE = 974;
+    private boolean isrecording = false;
 
     private FloatingActionButton fab;
     private FloatingActionButton fab1;
@@ -87,9 +90,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Notification
+        //Bubble
         initBubble();
-        //createNotificationChannel();
+        isrecording = false;
 
         if(Build.VERSION.SDK_INT>=23){
             if(!Settings.canDrawOverlays(MainActivity.this)){
@@ -157,6 +160,31 @@ public class MainActivity extends AppCompatActivity {
                     // result of the request.
                 }
             }
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.FOREGROUND_SERVICE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.FOREGROUND_SERVICE)) {
+
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.FOREGROUND_SERVICE},
+                            777);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            }
         }
 
         //create folder if not exist
@@ -167,45 +195,6 @@ public class MainActivity extends AppCompatActivity {
             success = folder.mkdir();
         }
 
-        /*toggleAppendix = (ToggleButton) findViewById(R.id.toggleButtonAppendix);
-        toggleAppendix.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    toggleGeneralConsent.setChecked(false);
-                    toggleAppendix.setChecked(true);
-                    toggleAppendix.setBackgroundColor(Color.parseColor("#0077ff"));
-                    toggleGeneralConsent.setBackgroundColor(Color.parseColor("#999999"));
-                    contractFilePath = "json-appendix/contract.json";
-                    consentPDFContent = "html-appendix/consentPDFcontent.html";
-                    consentReviewContent = "html-appendix/consent.html";
-                    filePrefix = "Appendix_";
-                } else {
-                    toggleGeneralConsent.setChecked(true);
-                    toggleAppendix.setChecked(false);
-                }
-            }
-        });
-
-        toggleGeneralConsent = (ToggleButton) findViewById(R.id.toggleButtonGeneralConsent);
-        toggleGeneralConsent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    toggleAppendix.setChecked(false);
-                    toggleGeneralConsent.setChecked(true);
-                    toggleGeneralConsent.setBackgroundColor(Color.parseColor("#0077ff"));
-                    toggleAppendix.setBackgroundColor(Color.parseColor("#999999"));
-                    contractFilePath = "json-generalconsent/contract.json";
-                    consentPDFContent = "html-generalconsent/consentPDFcontent.html";
-                    consentReviewContent = "html-generalconsent/consent.html";
-                    filePrefix = "GeneralConsent_";
-                } else {
-                    toggleAppendix.setChecked(true);
-                    toggleGeneralConsent.setChecked(false);
-                }
-            }
-        });
-
-        toggleAppendix.setChecked(true);*/
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab1 = (FloatingActionButton) findViewById(R.id.fab_1);
@@ -231,7 +220,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 closeFABMenu();
-                //triggerNotification();
                 addNewBubble();
             }
         });
@@ -277,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onBubbleClick(BubbleLayout bubble) {
                 Toast.makeText(MainActivity.this, "Bubble Clicked", Toast.LENGTH_SHORT).show();
-                //startNewPatient();
             }
         });
 
@@ -285,8 +272,22 @@ public class MainActivity extends AppCompatActivity {
         bubble_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Fab Clicked", Toast.LENGTH_SHORT).show();
                 //startNewPatient();
+                //take screenshot here
+                if(!isrecording){
+                    isrecording = true;
+                    Toast.makeText(MainActivity.this, "starting projection", Toast.LENGTH_SHORT).show();
+                    startProjection();
+                }else{
+                    isrecording = false;
+                    Toast.makeText(MainActivity.this, "stopping projection", Toast.LENGTH_SHORT).show();
+                    stopProjection();
+                }
+
+                //MediaProjectionManager projectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+                //startActivityForResult(projectionManager.createScreenCaptureIntent(), SCREEN_RECORD);
+
+
             }
         });
 
@@ -297,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.N)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode, data);
         // Check which request it is that we're responding to
         if (requestCode == GET_CONSENT) {
             if (resultCode == RESULT_OK) {
@@ -340,6 +342,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(logTag, patientRecord.FirstName + " " + patientRecord.LastName + " " + patientRecord.DateString + " " + patientRecord.Code);
 
                 startConsent();
+            }
+        }
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(MainActivity.this, "starting service", Toast.LENGTH_SHORT).show();
+                startService(ch.black_book.bubbleconsent.BubbleStart.ScreenCaptureService.getStartIntent(this, resultCode, data));
             }
         }
     }
@@ -420,17 +428,9 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, FINAL_SCREEN);
     }
 
-    /*private void writeSignatureToView(TaskResult result) {
-        String signatureEncodeBase64 = (String) result.getStepResult(ConsentTask.ID_SIGNATURE).getResultForIdentifier("ConsentSignatureStep.Signature");
-
-        byte[] decodedString = Base64.decode(signatureEncodeBase64, Base64.DEFAULT);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        ImageView signatureView = (ImageView) findViewById(R.id.signature_view);
-        signatureView.setImageBitmap(decodedByte);
-    }*/
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 666: {
                 // If request is cancelled, the result arrays are empty.
@@ -500,40 +500,20 @@ public class MainActivity extends AppCompatActivity {
         layout_fab3.setVisibility(View.GONE);
     }
 
-/*    private void createNotificationChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel notificationChannel = new NotificationChannel(getString(R.string.BUBBLE_CHANNEL_ID),getString(R.string.CHANNEL_BUBBLE), NotificationManager.IMPORTANCE_DEFAULT );
-            notificationChannel.setDescription(getString(R.string.CHANNEL_DESCRIPTION));
-            notificationChannel.setShowBadge(true);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
-    }
-
-    private void triggerNotification(){
-        Intent intent = new Intent(this, NotificationDetailsActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intent, 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.BUBBLE_CHANNEL_ID))
-                .setSmallIcon(R.drawable.ic_notification)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.ic_icon_large))
-                .setContentTitle("Notification Title")
-                .setContentText("This is text, that will be shown as part of notification")
-                .setStyle(new NotificationCompat.BigTextStyle().bigText("This is text, that will be shown as part of notification"))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
-                .setChannelId(getString(R.string.BUBBLE_CHANNEL_ID))
-                .setAutoCancel(true);
-
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(getResources().getInteger(R.integer.notificationId), builder.build());
-
-
-    }*/
-
     protected void onDestroy(){
         super.onDestroy();
         bubblesManager.recycle();
+    }
+
+    private void startProjection() {
+        Toast.makeText(MainActivity.this, "start Projection", Toast.LENGTH_SHORT).show();
+        MediaProjectionManager mProjectionManager =
+                (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        startActivityForResult(mProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
+    }
+
+    private void stopProjection() {
+        Toast.makeText(MainActivity.this, "stop projection", Toast.LENGTH_SHORT).show();
+        startService(ch.black_book.bubbleconsent.BubbleStart.ScreenCaptureService.getStopIntent(this));
     }
 }
